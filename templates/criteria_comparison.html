@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>So Sánh Tiêu Chí - AHP</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(120deg, #f8fafc 0%, #e0e7ef 100%);
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto 0 auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
+            padding: 36px 28px 28px 28px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.2rem;
+            color: #2563eb;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        h3 {
+            text-align: center;
+            color: #374151;
+            font-size: 1.15rem;
+            margin-bottom: 18px;
+            font-weight: 500;
+        }
+        .upload-section {
+            background: #f3f6fa;
+            border-radius: 12px;
+            padding: 18px 18px 10px 18px;
+            margin-bottom: 18px;
+            box-shadow: 0 1px 4px rgba(31,38,135,0.04);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .upload-section label {
+            font-weight: 500;
+            color: #2563eb;
+            margin-bottom: 4px;
+        }
+        .upload-section input[type="file"] {
+            margin-bottom: 8px;
+        }
+        .button, .button.next-step {
+            background: #2563eb;
+            color: #fff;
+            padding: 10px 28px;
+            border-radius: 24px;
+            font-size: 1.08rem;
+            font-weight: 500;
+            text-decoration: none;
+            border: none;
+            margin-top: 10px;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+            transition: background 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .button:hover, .button.next-step:hover {
+            background: #1e40af;
+            box-shadow: 0 4px 16px rgba(37,99,235,0.18);
+        }
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 18px 0 10px 0;
+            background: #f8fafc;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(31,38,135,0.04);
+        }
+        .comparison-table th, .comparison-table td {
+            border: 1px solid #e5e7eb;
+            padding: 8px 6px;
+            text-align: center;
+            font-size: 1rem;
+        }
+        .comparison-table th {
+            background: #2563eb;
+            color: #fff;
+            font-weight: 600;
+        }
+        .comparison-table td {
+            background: #f3f6fa;
+        }
+        .comparison-table input[type="number"] {
+            width: 70px;
+            padding: 4px 6px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            font-size: 1rem;
+            text-align: center;
+        }
+        .error {
+            color: #dc2626;
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 10px 16px;
+            margin-bottom: 16px;
+            text-align: center;
+            font-weight: 500;
+        }
+        .success {
+            color: #15803d;
+            background: #bbf7d0;
+            border: 1px solid #86efac;
+            border-radius: 8px;
+            padding: 10px 16px;
+            margin-bottom: 16px;
+            text-align: center;
+            font-weight: 500;
+        }
+        ul {
+            margin: 0 0 0 18px;
+            padding: 0;
+        }
+        @media (max-width: 700px) {
+            .container { padding: 10px 2vw; }
+            .comparison-table th, .comparison-table td { font-size: 0.95rem; padding: 5px 2px; }
+            .comparison-table input[type="number"] { width: 48px; font-size: 0.95rem; }
+        }
+    </style>
+    <script>
+        function updateDiagonal(input) {
+            const row = input.dataset.row;
+            const col = input.dataset.col;
+            if (row === col) { // Đảm bảo đường chéo là 1
+                input.value = 1;
+                input.readOnly = true;
+            } else {
+                input.readOnly = false;
+            }
+
+            // Cập nhật giá trị nghịch đảo
+            const oppositeRow = col;
+            const oppositeCol = row;
+            const oppositeInput = document.querySelector(`input[name="criteria_${oppositeRow}_${oppositeCol}"]`);
+            if (oppositeInput) {
+                if (input.value && !isNaN(parseFloat(input.value)) && parseFloat(input.value) !== 0) {
+                    oppositeInput.value = (1 / parseFloat(input.value)).toFixed(3); // Giữ 3 chữ số thập phân
+                } else {
+                    oppositeInput.value = '';
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Khởi tạo giá trị đường chéo và nghịch đảo khi tải trang
+            document.querySelectorAll('input[name^="criteria_"]').forEach(input => {
+                updateDiagonal(input);
+            });
+        });
+
+        function handleFileUpload() {
+            const fileInput = document.getElementById('file_upload');
+            const manualInputForm = document.getElementById('manual_input_form');
+            if (fileInput.files.length > 0) {
+                manualInputForm.style.display = 'none';
+            } else {
+                manualInputForm.style.display = 'block';
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 10px;">
+            <a href="{{ url_for('index') }}" class="button secondary" style="background:#2563eb; color:#fff;"><i class="fa-solid fa-house"></i> Về trang chủ</a>
+            <a href="{{ url_for('history') }}" class="button secondary" style="background:#22c55e; color:#fff;"><i class="fa-solid fa-clock-rotate-left"></i> Xem Lịch Sử</a>
+        </div>
+        <h1><i class="fa-solid fa-scale-balanced"></i> So Sánh Cặp Các Tiêu Chí</h1>
+        <h3><i class="fa-solid fa-bullseye"></i> Mục tiêu: Chọn Phương Tiện Di Chuyển Trong Nội Thành TPHCM</h3>
+
+        {% if error %}
+            <p class="error"><i class="fa-solid fa-circle-exclamation"></i> {{ error }}</p>
+        {% endif %}
+
+        <form action="{{ url_for('criteria_comparison') }}" method="post" enctype="multipart/form-data">
+            <div class="upload-section">
+                <label for="file_upload"><i class="fa-solid fa-file-arrow-up"></i> Nhập từ file CSV/Excel:</label>
+                <input type="file" id="file_upload" name="file_upload" accept=".csv, .xls, .xlsx" onchange="handleFileUpload()">
+                <button type="submit" class="button"><i class="fa-solid fa-upload"></i> Upload và Tính</button>
+            </div>
+        </form>
+
+        <form id="manual_input_form" action="{{ url_for('criteria_comparison') }}" method="post">
+            <p style="margin-top:18px;">Nhập trọng số so sánh từ <b>1-9</b> (<b>1</b>: quan trọng bằng nhau, <b>9</b>: cực kỳ quan trọng):</p>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        {% for crit in criteria %}
+                            <th>{{ crit }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(criteria|length) %}
+                    <tr>
+                        <td><strong>{{ criteria[i] }}</strong></td>
+                        {% for j in range(criteria|length) %}
+                            <td>
+                                <input type="number" step="0.001" min="0.001" name="criteria_{{ i }}_{{ j }}"
+                                       data-row="{{ i }}" data-col="{{ j }}"
+                                       value="{{ '1' if i == j else matrix_data[i][j] if matrix_data is defined else '' }}"
+                                       {% if i == j %}readonly{% endif %}
+                                       onchange="updateDiagonal(this)">
+                            </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit" class="button"><i class="fa-solid fa-calculator"></i> Tính toán</button>
+        </form>
+
+        {% if weights is defined %}
+            <h2 style="margin-top:30px;color:#2563eb;font-size:1.3rem;"><i class="fa-solid fa-square-poll-vertical"></i> Kết quả tính toán tiêu chí</h2>
+            <p><strong>Lambda Max:</strong> {{ '%.4f' | format(lambda_max) }}</p>
+            <p><strong>Chỉ số nhất quán CI:</strong> {{ '%.4f' | format(CI) }}</p>
+            <p><strong>Tỷ số nhất quán CR:</strong> {{ '%.4f%%' | format(CR * 100) }}</p>
+
+            {% if is_consistent %}
+                <p class="success"><i class="fa-solid fa-circle-check"></i> Tỷ số nhất quán CR nhỏ hơn 10%. Có thể tiếp tục.</p>
+                <h3 style="margin-top:18px;"><i class="fa-solid fa-layer-group"></i> Trọng số các tiêu chí:</h3>
+                <ul>
+                    {% for i in range(criteria|length) %}
+                        <li><strong>{{ criteria[i] }}:</strong> {{ '%.4f' | format(weights[i]) }}</li>
+                    {% endfor %}
+                </ul>
+                <a href="{{ url_for('alternatives_comparison') }}" class="button next-step"><i class="fa-solid fa-arrow-right"></i> Tiếp tục So sánh Phương án</a>
+            {% else %}
+                <p class="error"><i class="fa-solid fa-triangle-exclamation"></i> Tỷ số nhất quán CR lớn hơn 10%. Vui lòng chỉnh sửa ma trận và tính toán lại.</p>
+            {% endif %}
+        {% endif %}
+    </div>
+    <footer>
+        <p style="text-align:center;color:#64748b;margin-top:32px;">&copy; {{ current_year }} - Nhóm 10 - 10_ĐH_THMT1</p>
+    </footer>
+</body>
+</html>

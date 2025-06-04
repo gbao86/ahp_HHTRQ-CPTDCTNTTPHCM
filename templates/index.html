@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Hỗ Trợ Ra Quyết Định AHP</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(120deg, #f8fafc 0%, #e0e7ef 100%);
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 60px auto 0 auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
+            padding: 40px 32px 32px 32px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5rem;
+            color: #2563eb;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        h2 {
+            font-size: 1.3rem;
+            color: #374151;
+            margin-bottom: 18px;
+            font-weight: 500;
+        }
+        .desc {
+            color: #475569;
+            font-size: 1.08rem;
+            margin-bottom: 18px;
+        }
+        .main-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            margin-top: 30px;
+            align-items: center;
+        }
+        .main-actions a {
+            background: #2563eb;
+            color: #fff;
+            padding: 12px 36px;
+            border-radius: 24px;
+            font-size: 1.15rem;
+            font-weight: 500;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+            transition: background 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .main-actions a.secondary {
+            background: #22c55e;
+            box-shadow: 0 1px 4px rgba(34,197,94,0.08);
+        }
+        .main-actions a:hover {
+            background: #1e40af;
+            box-shadow: 0 4px 16px rgba(37,99,235,0.18);
+        }
+        .main-actions a.secondary:hover {
+            background: #15803d;
+            box-shadow: 0 2px 8px rgba(34,197,94,0.18);
+        }
+        @media (max-width: 700px) {
+            .container { padding: 10px 2vw; }
+            h1 { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fa-solid fa-diagram-project"></i> Hệ Hỗ Trợ Ra Quyết Định AHP</h1>
+        <h2><i class="fa-solid fa-car-side"></i> Chọn Phương Tiện Di Chuyển Trong Nội Thành TPHCM</h2>
+        <div class="desc">
+            <p>Chào mừng bạn đến với công cụ hỗ trợ ra quyết định sử dụng phương pháp <b>AHP</b>.<br>
+            Hệ thống giúp bạn lựa chọn phương án tối ưu dựa trên nhiều tiêu chí một cách khoa học, minh bạch và trực quan.</p>
+            <p>Để bắt đầu, hãy so sánh các tiêu chí quan trọng cho việc lựa chọn phương tiện di chuyển.</p>
+        </div>
+        <div class="main-actions">
+            <a href="{{ url_for('criteria_comparison') }}"><i class="fa-solid fa-play"></i> Bắt đầu Phân Tích</a>
+            <a href="{{ url_for('history') }}" class="secondary"><i class="fa-solid fa-clock-rotate-left"></i> Xem Lịch Sử</a>
+        </div>
+    </div>
+    <footer>
+        <p style="text-align:center;color:#64748b;margin-top:32px;">&copy; {{ current_year }} - Nhóm 10 - 10_ĐH_THMT1</p>
+    </footer>
+</body>
+</html>

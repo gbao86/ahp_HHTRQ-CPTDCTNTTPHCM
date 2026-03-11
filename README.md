@@ -84,6 +84,8 @@ python app.py
 ```
 Truy cập ứng dụng tại: http://localhost:5000
 
+---
+
 ## Hướng dẫn sử dụng
 
 ### 1. Nhập số lượng và tên phương án
@@ -146,4 +148,5 @@ Email: tiktokthu10@gmail.com
 ---
 
 © 2024 Nhóm 10 - Lớp 10_ĐH_THMT1
+
 
